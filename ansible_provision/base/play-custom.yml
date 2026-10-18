@@ -1,0 +1,39 @@
+---
+- name: Setup Web & w server
+  hosts: dbserver
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Install MariaDB
+      ansible.builtin.apt:
+        name: mariadb-server
+        state: present
+        update_cache: true
+        clean: true
+
+- name: Setup Web Server
+  hosts: webserver
+  become: true
+  gather_facts: false
+  tasks:
+    - name: "Install Apache Webserver"
+      ansible.builtin.shell: |
+        if [ -f /etc/os-release ]; then
+            . /etc/os-release
+            case "$ID" in
+                ubuntu|debian)
+                    sudo apt install -y bsdtar apache2 php php-mysql
+                    sudo systemctl enable --now httpd
+                    sudo chown -R apache:apache /var/www/html
+                    ;;
+                fedora|centos|redhat)
+                    sudo dnf install -y bsdtar httpd php php-mysqlnd
+                    sudo systemctl enable --now httpd
+                    sudo chown -R apache:apache /var/www/html
+                    ;;
+                *)
+                    echo "Skipped"
+            esac
+        else
+            echo "Unknown Distro"
+        fi

@@ -1,0 +1,18 @@
+{
+  "project_name": "kube",
+  "lsp": {
+    "yaml-language-server": {
+      "settings": {
+        "yaml": {
+          "schemaStore": {
+            "enable": true,
+          },
+          "completion": true,
+          "schemas": {
+            "kubernetes": "data/**.yaml",
+          },
+        },
+      },
+    },
+  },
+}

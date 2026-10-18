@@ -1,0 +1,17 @@
+services:
+  web-server:
+    image: nginx:alpine
+    ports:
+      - "8080:80"
+    volumes:
+      - ./html:/usr/share/nginx/html
+    networks:
+      - fullstack-network
+networks:
+  fullstack-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.15.0.0/16
+          ip_range: 10.15.1.0/24
+          gateway: 10.15.1.1

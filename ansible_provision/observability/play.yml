@@ -1,0 +1,57 @@
+---
+- name: Setup exporters
+  hosts: all
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Create Observability Group
+      ansible.builtin.group:
+        name: prometheus
+        state: present
+
+    - name: Create Observability user
+      ansible.builtin.user:
+        name: prometheus
+        group: prometheus
+        state: present
+        shell: /sbin/nologin
+        create_home: false
+    - name: Copy Exporter
+      ansible.builtin.copy:
+        src: ./files/node_exporter
+        dest: /usr/local/bin/node_exporter
+        mode: "0770"
+        owner: prometheus
+        group: prometheus
+        backup: true
+
+    - name: Create Exporter Service
+      ansible.builtin.copy:
+        mode: "0644"
+        owner: root
+        group: root
+        content: |
+          [Unit]
+          Description=Node Exporter
+
+          [Service]
+          Type=simple
+          User=prometheus
+          Group=prometheus
+          ExecStart=/usr/local/bin/node_exporter
+          ExecReload=/bin/kill -HUP $MAINPID
+          Restart=on-abnormal
+          KillMode=mixed
+
+          NoNewPrivileges=on
+
+          [Install]
+          WantedBy=multi-user.target
+
+        dest: /usr/lib/systemd/system/node-exporter.service
+    - name: Enable Monitoring Service
+      ansible.builtin.systemd_service:
+        daemon_reload: true
+        name: node-exporter
+        state: started
+        enabled: true

@@ -1,0 +1,8 @@
+[webserver]
+webhost ansible_host=192.168.56.10
+
+[dbserver]
+dbhost ansible_host=192.168.56.11
+
+[all:vars]
+ansible_user=vagrant
