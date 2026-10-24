@@ -1,0 +1,18 @@
+apiVersion: k3d.io/v1alpha5
+kind: Simple
+metadata:
+  name: projects
+servers: 1
+agents: 2
+
+options:
+  k3d:
+    wait: true
+    disableLoadbalancer: true
+    disableImageVolume: false
+    disableRollback: false
+  k3s:
+    extraArgs:
+      - arg: --disable=traefik
+        nodeFilters:
+          - server:0
