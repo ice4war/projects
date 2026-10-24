@@ -22,7 +22,7 @@
             . /etc/os-release
             case "$ID" in
                 ubuntu|debian)
-                    sudo apt install -y bsdtar apache2 php php-mysql
+                    sudo apt-get install -y bsdtar apache2 php php-mysql
                     sudo systemctl enable --now httpd
                     sudo chown -R apache:apache /var/www/html
                     ;;

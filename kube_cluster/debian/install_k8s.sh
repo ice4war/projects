@@ -18,8 +18,8 @@ EOF
 sysctl --system
 
 sudo apt update
-sudo apt install -y apt-transport-https ca-certificates curl gpg
-sudo apt install -y kubelet kubeadm kubectl
+sudo apt-get install -y apt-transport-https ca-certificates curl gpg
+sudo apt-get install -y kubelet kubeadm kubectl
 sudo apt-mark hold kubelet kubeadm kubectl
 sudo kubeadm config images pull
 sudo systemctl enable kubelet

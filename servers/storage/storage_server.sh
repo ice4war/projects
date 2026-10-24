@@ -1,8 +1,8 @@
    #!/bin/env bash
    # setup packages
    sudo apt update
-   sudo apt install -y samba samba-common
-   sudo apt install -y lvm2 xfsprogs nfs-kernel-server
+   sudo apt-get install -y samba samba-common
+   sudo apt-get install -y lvm2 xfsprogs nfs-kernel-server
 
    # Create Volumes
    sudo pvcreate /dev/sdb /dev/sdc
