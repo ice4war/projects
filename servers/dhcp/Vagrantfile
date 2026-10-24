@@ -1,0 +1,58 @@
+Vagrant.configure('2') do |config|
+  config.vm.synced_folder '.', '/vagrant', disabled: true
+  config.ssh.insert_key = false
+  # Config VM provision
+  config.vm.provider 'virtualbox' do |vb|
+    vb.gui = false
+    vb.linked_clone = true
+    vb.cpus = 1
+    vb.memory = '1024'
+    vb.customize ['modifyvm', :id, '--ioapic', 'on']
+    vb.customize ['modifyvm', :id, '--uartmode1', 'disconnected']
+  end
+  # config.vm.network 'private_network', ip: '192.168.56.21', adapter: 2
+  # config.vm.network 'private_network', type: 'dhcp', virtualbox__intnet: 'intnet', adapter: 2
+  # config.vm.network 'public_network', bridge: 'wlan0', auto_config: true, adapter: 2
+
+  config.vm.define 'dhcp-server' do |node|
+    # DHCP Server
+    node.vm.box = 'boxomatic/debian-13'
+    node.vm.box_version = '20260924.0.1'
+    node.vm.box_check_update = false
+    node.vm.hostname = 'dhcp'
+    node.vm.provider 'virtualbox' do |vb|
+      vb.gui = false
+      vb.linked_clone = true
+      vb.cpus = 1
+      vb.memory = '1024'
+      vb.customize ['modifyvm', :id, '--ioapic', 'on']
+      vb.customize ['modifyvm', :id, '--uartmode1', 'disconnected']
+    end
+    # node.vm.network 'private_network', type: 'dhcp', auto_config: false, virtualbox__intnet: 'intnet', adapter: 2
+    node.vm.network 'private_network', ip: '192.168.0.1', virtualbox__intnet: 'intnet', adapter: 2
+
+    node.vm.provision 'shell', path: 'dhcp_server.sh'
+  end
+
+  config.vm.define 'test-server' do |node|
+    # DHCP Server
+    node.vm.box = 'boxomatic/debian-13'
+    node.vm.box_version = '20260924.0.1'
+    node.vm.box_check_update = false
+    node.vm.hostname = 'test'
+    node.vm.provider 'virtualbox' do |vb|
+      vb.gui = false
+      vb.linked_clone = true
+      vb.cpus = 1
+      vb.memory = '1024'
+      vb.customize ['modifyvm', :id, '--ioapic', 'on']
+      vb.customize ['modifyvm', :id, '--uartmode1', 'disconnected']
+    end
+    node.vm.network 'private_network', type: 'dhcp', auto_config: true, virtualbox__intnet: 'intnet', adapter: 2
+
+    node.vm.provision 'shell', inline: <<-SHELL
+    sudo apt update
+    sudo apt install -y dnsutils
+    SHELL
+  end
+end

@@ -1,0 +1,43 @@
+Vagrant.configure('2') do |config|
+  config.vm.synced_folder '.', '/vagrant', disabled: true
+  config.ssh.insert_key = false
+
+  config.vm.define 'dev-server' do |node|
+    # Storage server
+    node.vm.box = 'boxomatic/debian-13'
+    node.vm.box_version = '20260924.0.1'
+    node.vm.box_check_update = false
+    node.vm.hostname = 'CYBER'
+    node.vm.provider 'virtualbox' do |vb|
+      vb.gui = false
+      vb.cpus = 1
+      vb.memory = '1024'
+      vb.customize ['modifyvm', :id, '--ioapic', 'on']
+      vb.customize ['modifyvm', :id, '--uartmode1', 'disconnected']
+    end
+    node.vm.disk :disk, size: '10GB', name: 'share1'
+    node.vm.disk :disk, size: '10GB', name: 'share2'
+    node.vm.network 'private_network', ip: '192.168.0.2', virtualbox__intnet: 'intnet', adapter: 2
+
+    node.vm.provision 'shell', path: 'storage_server.sh'
+  end
+
+  config.vm.define 'test-server' do |node|
+    # Client Server
+    node.vm.box = 'almalinux/10'
+    node.vm.box_version = '10.2.20260914'
+    node.vm.box_check_update = false
+    node.vm.hostname = 'testvm'
+    node.vm.provider 'virtualbox' do |vb|
+      vb.gui = false
+      vb.cpus = 1
+      vb.memory = '1024'
+      vb.customize ['modifyvm', :id, '--ioapic', 'on']
+      vb.customize ['modifyvm', :id, '--uartmode1', 'disconnected']
+
+    end
+    node.vm.network 'private_network', ip: '192.168.0.3', virtualbox__intnet: 'intnet', adapter: 2
+    # node.vm.network 'private_network', type: 'dhcp', auto_config: false, virtualbox__intnet: 'intnet', adapter: 2
+    node.vm.provision 'shell', path: 'client.sh'
+  end
+end
