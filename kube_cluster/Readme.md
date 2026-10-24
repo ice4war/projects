@@ -1,3 +1,5 @@
+# k8s setup
+
 ## Minikube
 
 ```sh
@@ -41,6 +43,8 @@ sudo mv ./linux-amd64/helm /usr/local/bin
 rm -r linux-amd64/
 ```
 
+# CNI Setup
+
 ## Setup Cilium
 
 ```sh
@@ -61,7 +65,9 @@ sudo tar xzvfC cilium-linux-${CLI_ARCH}.tar.gz /usr/local/bin
 rm cilium-linux-${CLI_ARCH}.tar.gz{,.sha256sum}
 ```
 
-# Longhorn Storage Class
+# Storage Class Setup
+
+## Longhorn Storage Class
 
 > Install open-iscsi packages inside the Minikube host
 > Ensure the iscsid daemon is running (if using a VM driver)
